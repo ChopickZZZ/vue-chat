@@ -1,13 +1,38 @@
 <template>
-  <form class="join">
-    <input class="join__input" type="text" placeholder="ID комнаты" />
-    <input class="join__input" type="text" placeholder="Ваше имя" />
+  <form class="join" @submit.prevent="chatEnter">
+    <input
+      class="join__input"
+      type="text"
+      placeholder="ID комнаты"
+      v-model="roomId"
+    />
+    <input
+      class="join__input"
+      type="text"
+      placeholder="Ваше имя"
+      v-model="username"
+    />
     <button class="join__btn">Войти</button>
   </form>
 </template>
 
 <script>
-export default {};
+import { ref } from "vue";
+export default {
+  setup(_, { emit }) {
+    const roomId = ref("");
+    const username = ref("");
+
+    const chatEnter = () =>
+      emit("enter", { roomId: roomId.value, username: username.value });
+
+    return {
+      roomId,
+      username,
+      chatEnter,
+    };
+  },
+};
 </script>
 
 <style>
