@@ -30,6 +30,12 @@ ul {
    margin: 0;
 }
 
+input {
+   outline: none;
+   border: none;
+   font-size: inherit;
+}
+
 textarea {
    resize: none;
    border: none;

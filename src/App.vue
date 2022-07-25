@@ -6,7 +6,7 @@
 </style>
 
 <script>
-import AppChat from "@/components/AppChat.vue";
+import AppChat from "@/views/AppChat.vue";
 export default {
   components: { AppChat },
 };
