@@ -1,10 +1,11 @@
 <template>
   <JoinForm v-if="!isJoined" @enter="enterChat" />
-  <ChatInterface v-else />
+  <ChatInterface v-else :users="users" />
 </template>
 
 <script>
-import { ref } from "vue";
+import { computed, ref } from "vue";
+import { useStore } from "vuex";
 import axios from "axios";
 import socket from "@/utils/socket";
 import JoinForm from "@/components/JoinForm";
@@ -12,15 +13,30 @@ import ChatInterface from "@/components/ChatInterface";
 export default {
   setup() {
     const isJoined = ref(false);
+    const store = useStore();
 
     const enterChat = async (info) => {
-      const { data } = await axios.post("http://localhost:3000/rooms", info);
+      await axios.post(`http://localhost:3000/rooms`, info);
       isJoined.value = true;
-      socket.emit("joined", info);
-      socket.on("joined", (users) => console.log("new user", users));
+      socket.emit("join", info);
+
+      const { data } = await axios.get(
+        `http://localhost:3000/rooms/${info.roomId}`
+      );
+      store.commit("setUsers", data.users);
     };
 
-    return { isJoined, enterChat };
+    socket.on("setUsers", (users) => {
+      store.commit("setUsers", users);
+    });
+
+    const actualUsers = computed(() => store.getters.getUsers);
+
+    return {
+      isJoined,
+      enterChat,
+      users: actualUsers,
+    };
   },
   components: { JoinForm, ChatInterface },
 };

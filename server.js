@@ -5,6 +5,7 @@ const app = express()
 
 app.use(cors())
 app.use(express.json())
+app.use(express.urlencoded({ extended: true }))
 
 const server = require('http').Server(app)
 const { Server } = require('socket.io')
@@ -12,8 +13,13 @@ const { Server } = require('socket.io')
 const PORT = 3000
 const rooms = new Map()
 
-app.get('/rooms', (req, res) => {
-   res.json(rooms)
+app.get('/rooms/:id', (req, res) => {
+   const { id: roomId } = req.params
+   const obj = rooms.has(roomId) ? {
+      users: [...rooms.get(roomId).get('users').values()],
+      messages: [...rooms.get(roomId).get('messages').values()]
+   } : { users: [], messages: [] }
+   res.json(obj)
 })
 
 app.post('/rooms', (req, res) => {
@@ -24,7 +30,7 @@ app.post('/rooms', (req, res) => {
          ['messages', []]
       ]))
    }
-   res.json([...rooms.keys()])
+   res.send()
 })
 
 const io = new Server(server, {
@@ -35,13 +41,20 @@ const io = new Server(server, {
 })
 
 io.on('connection', socket => {
-   socket.on('joined', ({ roomId, username }) => {
+   socket.on('join', ({ roomId, username }) => {
       socket.join(roomId)
       rooms.get(roomId).get('users').set(socket.id, username)
       const users = [...rooms.get(roomId).get('users').values()]
-      socket.broadcast.to(roomId).emit('joined', users)
+      socket.to(roomId).emit('setUsers', users)
    })
-   console.log('user connected', socket.id)
+   socket.on('disconnect', () => {
+      rooms.forEach((value, roomId) => {
+         if (value.get('users').delete(socket.id)) {
+            const users = [...value.get('users').values()]
+            socket.broadcast.to(roomId).emit('setUsers', users)
+         }
+      })
+   })
 })
 
 server.listen(PORT, (err) => {

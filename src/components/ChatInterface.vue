@@ -1,9 +1,11 @@
 <template>
   <div class="chat">
     <div class="chat__users users">
-      <h3 class="users__count">Users (1):</h3>
+      <h3 class="users__count">{{ users.length }} users</h3>
       <ul class="users__list">
-        <li class="users__user">Test User</li>
+        <li class="users__user" v-for="user in users" :key="user">
+          {{ user }}
+        </li>
       </ul>
     </div>
     <div class="chat__messages messages">
@@ -25,14 +27,21 @@
       </div>
       <form class="messages__bottom">
         <textarea class="messages__area"></textarea>
-        <button class="messages__btn">Send</button>
+        <button class="messages__btn">Отправить</button>
       </form>
     </div>
   </div>
 </template>
 
 <script>
-export default {};
+export default {
+  props: {
+    users: {
+      type: Array,
+      required: true,
+    },
+  },
+};
 </script>
 
 <style scoped>
