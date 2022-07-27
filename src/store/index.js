@@ -3,10 +3,13 @@ import { createStore } from 'vuex'
 export default createStore({
   state: {
     roomId: null,
-    users: []
+    username: null,
+    users: [],
+    messages: []
   },
   getters: {
-    getUsers: state => state.users
+    getUsers: state => state.users,
+    getMessages: state => state.messages
   },
   mutations: {
     setUsers(state, users) {
@@ -14,6 +17,13 @@ export default createStore({
     },
     setUser(state, user) {
       state.users.push(user)
+    },
+    setRoomIdAndUsername(state, { roomId, username }) {
+      state.roomId = roomId
+      state.username = username
+    },
+    addMessage(state, messageInfo) {
+      state.messages.push(messageInfo)
     }
   },
   actions: {

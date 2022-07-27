@@ -9,24 +9,14 @@
       </ul>
     </div>
     <div class="chat__messages messages">
-      <div class="messages__top">
-        <ul class="messages__list">
-          <li class="messages__item">
-            <span class="messages__text"
-              >Lorem ipsum dolor sit amet consectetur, adipisicing elit.</span
-            >
-            <small class="messages__sender">Test User</small>
-          </li>
-          <li class="messages__item">
-            <span class="messages__text"
-              >Lorem ipsum dolor sit amet consectetur adipisicing elit.</span
-            >
-            <small class="messages__sender">Test User</small>
-          </li>
-        </ul>
-      </div>
-      <form class="messages__bottom">
-        <textarea class="messages__area"></textarea>
+      <ul class="messages__list">
+        <li class="messages__item" v-for="message in messages" :key="message">
+          <span class="messages__text">{{ message.text }}</span>
+          <small class="messages__sender">{{ message.username }}</small>
+        </li>
+      </ul>
+      <form class="messages__bottom" @submit.prevent="sendMessage">
+        <textarea class="messages__area" v-model="textMessage"></textarea>
         <button class="messages__btn">Отправить</button>
       </form>
     </div>
@@ -34,12 +24,28 @@
 </template>
 
 <script>
+import { ref } from "@vue/reactivity";
+import { useStore } from "vuex";
+import { computed } from "@vue/runtime-core";
 export default {
   props: {
     users: {
       type: Array,
       required: true,
     },
+  },
+  setup(_, { emit }) {
+    const store = useStore();
+    const textMessage = ref("");
+    const sendMessage = () => emit("send", textMessage);
+
+    const messages = computed(() => store.getters.getMessages);
+
+    return {
+      textMessage,
+      sendMessage,
+      messages,
+    };
   },
 };
 </script>
@@ -76,8 +82,10 @@ export default {
   display: flex;
   flex-direction: column;
 }
-.messages__top {
+.messages__list {
   flex: 0 1 70%;
+  max-height: 100%;
+  overflow: auto;
 }
 .messages__item {
   display: flex;

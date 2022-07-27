@@ -18,13 +18,20 @@
 
 <script>
 import { ref } from "vue";
+import { useStore } from "vuex";
 export default {
   setup(_, { emit }) {
     const roomId = ref("");
     const username = ref("");
+    const store = useStore();
 
-    const chatEnter = () =>
+    const chatEnter = () => {
+      store.commit("setRoomIdAndUsername", {
+        roomId: roomId.value,
+        username: username.value,
+      });
       emit("enter", { roomId: roomId.value, username: username.value });
+    };
 
     return {
       roomId,
