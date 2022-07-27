@@ -4,6 +4,13 @@
    box-sizing: border-box;
 }
 
+:root {
+   --color-brown-primary: #533a27;
+   --color-brown-darken: #352315;
+   --color-brown-dark: #351f0d;
+   --color-brown-grey: #251f16;
+}
+
 body {
    padding: 0;
    margin: 0;
@@ -57,4 +64,22 @@ button {
    align-items: center;
    flex-direction: column;
    overflow: hidden;
+}
+
+.btn {
+   display: inline-flex;
+   justify-content: center;
+   padding: 0.5rem 1rem;
+   background-color: var(--color-brown-primary);
+   border: 1px solid var(--color-brown-darken);
+   color: #fff;
+   letter-spacing: 1px;
+   border-radius: 5px;
+   cursor: pointer;
+   transition: 0.4s ease;
+}
+
+.btn:hover {
+   background-color: var(--color-brown-darken);
+   border-color: var(--color-brown-dark);
 }

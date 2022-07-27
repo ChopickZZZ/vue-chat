@@ -1,10 +1,10 @@
 <template>
   <div class="chat">
     <div class="chat__users users">
-      <h3 class="users__count">
-        {{ users.length }} {{ users.length > 1 ? "users" : "user" }}
-      </h3>
-      <hr />
+      <h2 class="users__count">
+        {{ users.length }} {{ users.length > 1 ? "Users" : "User" }}
+      </h2>
+      <hr style="margin-bottom: 1rem" />
       <ul class="users__list">
         <li class="users__user" v-for="user in users" :key="user">
           {{ user }}
@@ -28,8 +28,13 @@
         </li>
       </ul>
       <form class="messages__form" @submit.prevent="sendMessage">
-        <textarea class="messages__area" v-model="textMessage"></textarea>
-        <button class="messages__btn">Отправить</button>
+        <textarea
+          class="messages__area"
+          v-focus
+          v-model="textMessage"
+          placeholder="Введите сообщение"
+        ></textarea>
+        <button class="messages__btn btn">Отправить</button>
       </form>
     </div>
   </div>
@@ -49,7 +54,7 @@ export default {
       default: [],
     },
   },
-  setup(_, { emit }) {
+  setup(props, { emit }) {
     const storeChat = useChatStore();
     const messageContainer = ref(messageContainer);
     const textMessage = ref("");
@@ -58,15 +63,19 @@ export default {
       if (textMessage.value) {
         emit("send", textMessage.value);
         textMessage.value = "";
-        setTimeout(() => {
-          messageContainer.value.scrollTo({
-            top: 99999,
-            left: 0,
-            behavior: "smooth",
-          });
-        }, 0);
       }
+      console.log(messageContainer.value);
     };
+
+    watch(props.messages, () => {
+      setTimeout(() => {
+        messageContainer.value.scrollTo({
+          top: 99999,
+          left: 0,
+          behavior: "smooth",
+        });
+      }, 0);
+    });
 
     return {
       textMessage,
@@ -87,32 +96,39 @@ export default {
   border-radius: 5px;
   overflow: hidden;
 }
+
 .chat__users {
   flex: 0 1 25%;
-  background-color: #533a27;
+  background-color: var(--color-brown-primary);
   padding: 1.2rem 1rem;
 }
+
 .users__count {
   font-size: 1.3rem;
   color: rgb(179, 174, 174);
   font-weight: 700;
   margin-bottom: 0.5rem;
 }
+
 .users__user {
-  background-color: #251f16;
+  background-color: var(--color-brown-grey);
   color: #fff;
   padding: 0.35rem 0.35rem 0.35rem 0.75rem;
   border-radius: 5px;
+  overflow: hidden;
 }
+
 .users__user:not(:last-child) {
   margin-bottom: 0.5rem;
 }
+
 .chat__messages {
   flex: 0 1 75%;
   padding: 1.5rem;
   display: flex;
   flex-direction: column;
 }
+
 .messages__list {
   flex: 0 0 70%;
   max-height: 100%;
@@ -120,17 +136,21 @@ export default {
   padding-bottom: 0.75rem;
   overflow: auto;
 }
+
 .messages__item {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
 }
+
 .messages__item_right {
   align-items: flex-end;
 }
+
 .messages__item:not(:last-child) {
   margin-bottom: 1rem;
 }
+
 .messages__item span {
   color: #fff;
   font-size: 13px;
@@ -139,19 +159,35 @@ export default {
   border-radius: 10px;
   margin-bottom: 0.4rem;
 }
+
 .messages__item small {
   padding-left: 0.2rem;
   color: #666;
   font-size: 12px;
 }
+
 .messages__form {
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
   align-items: flex-start;
-  padding: 0.5rem 0;
+  padding: 0.75rem 0;
+  position: relative;
 }
+
+.messages__form::before {
+  content: "";
+  width: 100%;
+  height: 1px;
+  background-color: var(--color-brown-grey);
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
 .messages__area {
+  font-size: 0.9rem;
+  color: var(--color-brown-grey);
   width: 90%;
   min-height: 100px;
   border: 1px solid #888;
@@ -159,19 +195,9 @@ export default {
   margin-bottom: 1rem;
   padding: 0.5rem;
 }
-.messages__btn {
-  display: inline-flex;
-  padding: 0.5rem 0.75rem;
-  background-color: #533a27;
-  color: #fff;
-  letter-spacing: 1px;
-  border: 1px solid #352315;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: 0.4s ease;
-}
-.messages__btn:hover {
-  background-color: #352315;
-  border-color: #351f0d;
+
+.messages__area::placeholder {
+  font-size: 0.9rem;
+  color: var(--color-brown-grey);
 }
 </style>
