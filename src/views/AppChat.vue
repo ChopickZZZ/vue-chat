@@ -10,7 +10,7 @@
 
 <script>
 import { computed, ref } from "vue";
-import { useStore } from "vuex";
+import { useChatStore } from "@/stores/chat";
 import axios from "axios";
 import socket from "@/utils/socket";
 import JoinForm from "@/components/JoinForm";
@@ -18,7 +18,7 @@ import ChatInterface from "@/components/ChatInterface";
 export default {
   setup() {
     const isJoined = ref(false);
-    const store = useStore();
+    const storeChat = useChatStore();
 
     const enterChat = async (info) => {
       await axios.post(`http://localhost:3000/rooms`, info);
@@ -28,33 +28,28 @@ export default {
       const { data } = await axios.get(
         `http://localhost:3000/rooms/${info.roomId}`
       );
-      store.commit("setUsers", data.users);
+      storeChat.setUsers(data.users);
     };
 
     const sendMessage = (text) => {
-      store.commit("addMessage", { text, username: store.state.username });
+      storeChat.addMessage({ text, username: storeChat.username });
       socket.emit("newMessage", {
-        roomId: store.state.roomId,
-        username: store.state.username,
+        roomId: storeChat.roomId,
+        username: storeChat.username,
         text,
       });
     };
 
     socket.on("setUsers", (users) => {
-      store.commit("setUsers", users);
+      storeChat.setUsers(users);
     });
 
     socket.on("newMessage", (messageInfo) => {
-      store.commit("addMessage", messageInfo);
+      storeChat.addMessage(messageInfo);
     });
 
-    socket.on("loadMessages", (messages) => {
-      console.log(messages);
-      store.commit("loadAllMessages", messages);
-    });
-
-    const users = computed(() => store.getters.getUsers);
-    const messages = computed(() => store.getters.getMessages);
+    const users = computed(() => storeChat.getUsers);
+    const messages = computed(() => storeChat.getMessages);
 
     return {
       isJoined,

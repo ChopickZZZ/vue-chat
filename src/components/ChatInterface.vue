@@ -17,7 +17,7 @@
           :class="[
             'messages__item',
             {
-              messages__item_right: message.username === $store.state.username,
+              messages__item_right: message.username === storeChat.username,
             },
           ]"
           v-for="message in messages"
@@ -37,6 +37,7 @@
 
 <script>
 import { ref, watch } from "vue";
+import { useChatStore } from "@/stores/chat";
 export default {
   props: {
     users: {
@@ -48,7 +49,8 @@ export default {
       default: [],
     },
   },
-  setup(props, { emit }) {
+  setup(_, { emit }) {
+    const storeChat = useChatStore();
     const messageContainer = ref(messageContainer);
     const textMessage = ref("");
 
@@ -56,23 +58,21 @@ export default {
       if (textMessage.value) {
         emit("send", textMessage.value);
         textMessage.value = "";
+        setTimeout(() => {
+          messageContainer.value.scrollTo({
+            top: 99999,
+            left: 0,
+            behavior: "smooth",
+          });
+        }, 0);
       }
     };
-
-    watch(props.messages, () => {
-      setTimeout(() => {
-        messageContainer.value.scrollTo({
-          top: 99999,
-          left: 0,
-          behavior: "smooth",
-        });
-      }, 0);
-    });
 
     return {
       textMessage,
       sendMessage,
       messageContainer,
+      storeChat,
     };
   },
 };
