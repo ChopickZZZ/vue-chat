@@ -1,7 +1,10 @@
 <template>
   <div class="chat">
     <div class="chat__users users">
-      <h3 class="users__count">{{ users.length }} users</h3>
+      <h3 class="users__count">
+        {{ users.length }} {{ users.length > 1 ? "users" : "user" }}
+      </h3>
+      <hr />
       <ul class="users__list">
         <li class="users__user" v-for="user in users" :key="user">
           {{ user }}
@@ -9,13 +12,22 @@
       </ul>
     </div>
     <div class="chat__messages messages">
-      <ul class="messages__list">
-        <li class="messages__item" v-for="message in messages" :key="message">
+      <ul class="messages__list" ref="messageContainer">
+        <li
+          :class="[
+            'messages__item',
+            {
+              messages__item_right: message.username === $store.state.username,
+            },
+          ]"
+          v-for="message in messages"
+          :key="message"
+        >
           <span class="messages__text">{{ message.text }}</span>
           <small class="messages__sender">{{ message.username }}</small>
         </li>
       </ul>
-      <form class="messages__bottom" @submit.prevent="sendMessage">
+      <form class="messages__form" @submit.prevent="sendMessage">
         <textarea class="messages__area" v-model="textMessage"></textarea>
         <button class="messages__btn">Отправить</button>
       </form>
@@ -24,27 +36,43 @@
 </template>
 
 <script>
-import { ref } from "@vue/reactivity";
-import { useStore } from "vuex";
-import { computed } from "@vue/runtime-core";
+import { ref, watch } from "vue";
 export default {
   props: {
     users: {
       type: Array,
       required: true,
     },
+    messages: {
+      type: Array,
+      default: [],
+    },
   },
-  setup(_, { emit }) {
-    const store = useStore();
+  setup(props, { emit }) {
+    const messageContainer = ref(messageContainer);
     const textMessage = ref("");
-    const sendMessage = () => emit("send", textMessage);
 
-    const messages = computed(() => store.getters.getMessages);
+    const sendMessage = () => {
+      if (textMessage.value) {
+        emit("send", textMessage.value);
+        textMessage.value = "";
+      }
+    };
+
+    watch(props.messages, () => {
+      setTimeout(() => {
+        messageContainer.value.scrollTo({
+          top: 99999,
+          left: 0,
+          behavior: "smooth",
+        });
+      }, 0);
+    });
 
     return {
       textMessage,
       sendMessage,
-      messages,
+      messageContainer,
     };
   },
 };
@@ -52,8 +80,8 @@ export default {
 
 <style scoped>
 .chat {
-  min-width: 700px;
-  min-height: 500px;
+  width: 700px;
+  height: 550px;
   display: flex;
   background-color: #fff;
   border-radius: 5px;
@@ -61,16 +89,19 @@ export default {
 }
 .chat__users {
   flex: 0 1 25%;
-  background-color: #eaeaea;
+  background-color: #533a27;
   padding: 1.2rem 1rem;
 }
 .users__count {
+  font-size: 1.3rem;
+  color: rgb(179, 174, 174);
   font-weight: 700;
   margin-bottom: 0.5rem;
 }
 .users__user {
-  background-color: #fff;
-  padding: 0.3rem;
+  background-color: #251f16;
+  color: #fff;
+  padding: 0.35rem 0.35rem 0.35rem 0.75rem;
   border-radius: 5px;
 }
 .users__user:not(:last-child) {
@@ -83,14 +114,19 @@ export default {
   flex-direction: column;
 }
 .messages__list {
-  flex: 0 1 70%;
+  flex: 0 0 70%;
   max-height: 100%;
+  padding-right: 1rem;
+  padding-bottom: 0.75rem;
   overflow: auto;
 }
 .messages__item {
   display: flex;
   flex-direction: column;
-  max-width: 75%;
+  align-items: flex-start;
+}
+.messages__item_right {
+  align-items: flex-end;
 }
 .messages__item:not(:last-child) {
   margin-bottom: 1rem;
@@ -98,8 +134,8 @@ export default {
 .messages__item span {
   color: #fff;
   font-size: 13px;
-  padding: 0.7rem;
-  background-color: rgb(0, 153, 77);
+  padding: 0.55rem;
+  background-color: #b28451;
   border-radius: 10px;
   margin-bottom: 0.4rem;
 }
@@ -108,11 +144,12 @@ export default {
   color: #666;
   font-size: 12px;
 }
-.messages__bottom {
+.messages__form {
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
   align-items: flex-start;
+  padding: 0.5rem 0;
 }
 .messages__area {
   width: 90%;
@@ -125,16 +162,16 @@ export default {
 .messages__btn {
   display: inline-flex;
   padding: 0.5rem 0.75rem;
-  background-color: rgb(0, 153, 77);
+  background-color: #533a27;
   color: #fff;
   letter-spacing: 1px;
-  border: 1px solid rgb(0, 99, 49);
+  border: 1px solid #352315;
   border-radius: 5px;
   cursor: pointer;
   transition: 0.4s ease;
 }
 .messages__btn:hover {
-  background-color: rgb(1, 114, 57);
-  border-color: rgb(0, 87, 43);
+  background-color: #352315;
+  border-color: #351f0d;
 }
 </style>

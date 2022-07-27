@@ -23,7 +23,11 @@ export default createStore({
       state.username = username
     },
     addMessage(state, messageInfo) {
-      state.messages.push(messageInfo)
+      const obj = { ...messageInfo }
+      state.messages.push(obj)
+    },
+    loadAllMessages(state, messages) {
+      state.messages = messages
     }
   },
   actions: {

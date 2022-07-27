@@ -1,6 +1,11 @@
 <template>
   <JoinForm v-if="!isJoined" @enter="enterChat" />
-  <ChatInterface v-else :users="users" @send="sendMessage" />
+  <ChatInterface
+    v-else
+    :users="users"
+    :messages="messages"
+    @send="sendMessage"
+  />
 </template>
 
 <script>
@@ -31,7 +36,7 @@ export default {
       socket.emit("newMessage", {
         roomId: store.state.roomId,
         username: store.state.username,
-        text: text.value,
+        text,
       });
     };
 
@@ -43,13 +48,20 @@ export default {
       store.commit("addMessage", messageInfo);
     });
 
-    const actualUsers = computed(() => store.getters.getUsers);
+    socket.on("loadMessages", (messages) => {
+      console.log(messages);
+      store.commit("loadAllMessages", messages);
+    });
+
+    const users = computed(() => store.getters.getUsers);
+    const messages = computed(() => store.getters.getMessages);
 
     return {
       isJoined,
       enterChat,
       sendMessage,
-      users: actualUsers,
+      users,
+      messages,
     };
   },
   components: { JoinForm, ChatInterface },

@@ -63,16 +63,16 @@ export default {
   display: inline-flex;
   justify-content: center;
   padding: 0.5rem 1rem;
-  background-color: rgb(0, 153, 77);
+  background-color: #533a27;
+  border: 1px solid #352315;
   color: #fff;
   letter-spacing: 1px;
-  border: 1px solid rgb(0, 99, 49);
   border-radius: 5px;
   cursor: pointer;
   transition: 0.4s ease;
 }
 .join__btn:hover {
-  background-color: rgb(1, 114, 57);
-  border-color: rgb(0, 87, 43);
+  background-color: #352315;
+  border-color: #351f0d;
 }
 </style>

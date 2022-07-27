@@ -42,10 +42,12 @@ const io = new Server(server, {
 
 io.on('connection', socket => {
    socket.on('join', ({ roomId, username }) => {
+      const messages = rooms.get(roomId).get('messages')
       socket.join(roomId)
       rooms.get(roomId).get('users').set(socket.id, username)
       const users = [...rooms.get(roomId).get('users').values()]
       socket.to(roomId).emit('setUsers', users)
+      socket.to(roomId).emit('loadMessages', messages)
    })
    socket.on('newMessage', ({ roomId, username, text }) => {
       const messageInfo = { username, text }
