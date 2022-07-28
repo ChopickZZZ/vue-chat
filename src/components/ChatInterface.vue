@@ -64,7 +64,6 @@ export default {
         emit("send", textMessage.value);
         textMessage.value = "";
       }
-      console.log(messageContainer.value);
     };
 
     watch(props.messages, () => {
