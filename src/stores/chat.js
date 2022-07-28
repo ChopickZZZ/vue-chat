@@ -16,8 +16,10 @@ export const useChatStore = defineStore({
 		setUsers(users) {
 			this.users = users
 		},
-		setRoomIdAndUsername({ roomId, username }) {
+		setRoomId(roomId) {
 			this.roomId = roomId
+		},
+		setActualUser(username) {
 			this.username = username
 		},
 		addMessage(messageInfo) {

@@ -53,14 +53,10 @@ export default {
         .required("Это поле обязательно")
         .min(3, "Введите минимум 3 символа")
     );
-
     const storeChat = useChatStore();
 
     const chatEnter = handleSubmit(({ roomId, username }) => {
-      storeChat.setRoomIdAndUsername({
-        roomId,
-        username,
-      });
+      storeChat.setRoomId(roomId);
       emit("enter", { roomId, username });
     });
 

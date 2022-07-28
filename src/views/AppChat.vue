@@ -28,6 +28,7 @@ export default {
       const { data } = await axios.get(
         `http://localhost:3000/rooms/${info.roomId}`
       );
+      storeChat.setActualUser(data.users[data.users.length - 1]);
       storeChat.setUsers(data.users);
     };
 

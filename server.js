@@ -40,11 +40,18 @@ const io = new Server(server, {
    }
 })
 
+const getUsers = (roomId) => [...rooms.get(roomId).get('users').values()]
+let usernameCount = 1
+
 io.on('connection', socket => {
    socket.on('join', ({ roomId, username }) => {
       socket.join(roomId)
+      let users = getUsers(roomId)
+      if (users.includes(username)) {
+         username = username + ' (' + ++usernameCount + ')'
+      }
       rooms.get(roomId).get('users').set(socket.id, username)
-      const users = [...rooms.get(roomId).get('users').values()]
+      users = getUsers(roomId)
       socket.to(roomId).emit('setUsers', users)
    })
    socket.on('newMessage', ({ roomId, username, text }) => {
