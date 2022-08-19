@@ -1,11 +1,13 @@
 const express = require('express')
 const cors = require('cors')
+const path = require('path')
 
 const app = express()
 
 app.use(cors())
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
+app.use(express.static(path.join(__dirname, './dist')));
 
 const server = require('http').Server(app)
 const { Server } = require('socket.io')
@@ -32,6 +34,10 @@ app.post('/rooms', (req, res) => {
    }
    res.send()
 })
+
+app.get('/', (req, res) => {
+   res.sendFile(path.join(__dirname, '../dist/index.html'));
+});
 
 const io = new Server(server, {
    cors: {
